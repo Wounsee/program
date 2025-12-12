@@ -45,11 +45,11 @@ class AutoPinger {
     async pingMethod1() {
         try {
             const response = await axios.get(`${APP_URL}/health`, { timeout: 10000 });
-            console.log(`✅ [Метод 1] ${new Date().toLocaleTimeString()} - ${response.status}`);
+            console.log(`[Method 1] ${new Date().toLocaleTimeString()} - ${response.status}`);
             stats.successfulRequests++;
             return true;
         } catch (error) {
-            console.log(`❌ [Метод 1] Ошибка: ${error.message}`);
+            console.log(`[Method 1] Error: ${error.message}`);
             return false;
         }
     }
@@ -58,11 +58,11 @@ class AutoPinger {
     async pingMethod2() {
         try {
             const response = await axios.head(`${APP_URL}`, { timeout: 8000 });
-            console.log(`✅ [Метод 2] ${new Date().toLocaleTimeString()} - ${response.status}`);
+            console.log(`[Method 2] ${new Date().toLocaleTimeString()} - ${response.status}`);
             stats.successfulRequests++;
             return true;
         } catch (error) {
-            console.log(`❌ [Метод 2] Ошибка: ${error.message}`);
+            console.log(`[Method 2] Error: ${error.message}`);
             return false;
         }
     }
@@ -75,18 +75,18 @@ class AutoPinger {
                 source: 'auto-pinger',
                 method: 'complex'
             }, { timeout: 12000 });
-            console.log(`✅ [Метод 3] ${new Date().toLocaleTimeString()} - ${response.status}`);
+            console.log(`[Method 3] ${new Date().toLocaleTimeString()} - ${response.status}`);
             stats.successfulRequests++;
             return true;
         } catch (error) {
-            console.log(`❌ [Метод 3] Ошибка: ${error.message}`);
+            console.log(`[Method 3] Error: ${error.message}`);
             return false;
         }
     }
 
     // Запуск всех методов
     async pingAll() {
-        console.log(`\n🔔 [${new Date().toLocaleTimeString()}] Запуск автопинга...`);
+        console.log(`\n[${new Date().toLocaleTimeString()}] Starting auto-ping...`);
         stats.lastPing = new Date();
         
         const results = await Promise.allSettled(
@@ -94,7 +94,7 @@ class AutoPinger {
         );
         
         const successful = results.filter(r => r.status === 'fulfilled' && r.value).length;
-        console.log(`📊 Результат: ${successful}/${this.methods.length} методов успешно`);
+        console.log(`Result: ${successful}/${this.methods.length} methods successful`);
         
         return successful > 0;
     }
@@ -113,7 +113,7 @@ class AutoPinger {
         // Пинг сразу при старте
         setTimeout(() => this.pingAll(), 5000);
         
-        console.log(`🚀 Автопинг запущен (интервал: ${intervalMinutes} мин)`);
+        console.log(`Auto-ping started (interval: ${intervalMinutes} minutes)`);
     }
 }
 
@@ -137,7 +137,7 @@ async function sendToTelegram(username, ip) {
         
         return true;
     } catch (error) {
-        console.error('❌ Ошибка отправки в Telegram:', error.message);
+        console.error('Telegram send error:', error.message);
         return false;
     }
 }
@@ -275,8 +275,7 @@ app.get('/download', (req, res) => {
         }
     };
     
-    const readme = `
-# Telegram Bot Site
+    const readme = `# Telegram Bot Site
 
 ## Установка
 \`\`\`bash
@@ -308,7 +307,7 @@ RENDER_EXTERNAL_URL=https://ваш-сайт.onrender.com
 
 ## Автопинг
 Сервис автоматически пингует себя каждые 3 минуты
-\`\`\`
+`;
     
     res.json({
         files: {
@@ -332,11 +331,13 @@ app.use((req, res) => {
 // ==================== ЗАПУСК СЕРВЕРА ====================
 app.listen(PORT, () => {
     console.log(`
-    🚀 Сервер запущен!
-    👉 Локально: http://localhost:${PORT}
-    👉 Внешний URL: ${APP_URL}
-    👉 Health check: ${APP_URL}/health
-    👉 Статистика: ${APP_URL}/api/stats
+    ============================================
+    SERVER STARTED!
+    Local: http://localhost:${PORT}
+    External URL: ${APP_URL}
+    Health check: ${APP_URL}/health
+    Stats: ${APP_URL}/api/stats
+    ============================================
     `);
     
     // Запускаем автопинг
